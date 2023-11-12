@@ -1,0 +1,31 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from nltk.corpus import stopwords
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+file_path = r"C:\Users\val\OneDrive\Documents\GitHub\Experiment-Portfolio\01-Email Spam Detection\01 - Code\Emails.csv" # Links to the source file
+data = pd.read_csv(file_path) # Reads file
+print(data) # Prints content
+X = data['Message'] # Message heading
+y = data['Category'] # Category heading
+
+x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) # Train Test Split
+tfidf_vectorizer = TfidfVectorizer(min_df=1, stop_words='english', lowercase=True) # TFID
+f_extract = TfidfVectorizer(min_df=1, stop_words='english', lowercase=True) # TFID
+
+# Fit data into a model
+X_train_f = f_extract.fit_transform(x_train)
+X_test_f = f_extract.transform(x_test)
+
+model = LogisticRegression() # Create probability model
+model.fit(X_train_f, y_train) # Fits the data
+
+trainingdata_predict = model.predict(X_train_f) # Model Prediction
+trainingdata_accuracy = accuracy_score(y_train, trainingdata_predict) # Accuracy
+print("Accuracy of Model on Training Data", (trainingdata_accuracy*100)) # Prints Accuracy
+
+testingdata_predict = model.predict(X_test_f) # Model Prediction
+testingdata_accuracy = accuracy_score(y_test, testingdata_predict) # Accuracy
+print("Accuracy of Model on Testing Data", (testingdata_accuracy*100)) # Prints Accuracy
